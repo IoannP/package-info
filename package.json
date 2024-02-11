@@ -8,6 +8,10 @@
     "name": "Ioann Pilipchuk",
     "email": "iopilipchuk@gmail.com"
   },
+  "repository": {
+    "url": "https://github.com/IoannP/npm-info.git",
+    "type": "git"
+  },
   "engines": {
     "vscode": "^1.86.0"
   },
@@ -31,7 +35,7 @@
   "activationEvents": [
     "onLanguage:javascript"
   ],
-  "main": "./out/src/extension.js",
+  "main": "./src/extension",
   "scripts": {
     "lint": "eslint ."
   },

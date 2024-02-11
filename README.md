@@ -6,3 +6,8 @@ Simply hover over imported packages in your code to instantly view concise descr
 
 Package Description Explorer streamlines your development process by providing essential information at your fingertips, saving you time and effort. Plus, with convenient links to the package's source page on npm or GitHub, you can dive deeper into documentation and community discussions with ease.
 
+# How to use 
+
+1. Navigate to the line where you `require(...)` or `improt from '...'` the package.
+
+![example](assets/example.png)
