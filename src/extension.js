@@ -1,9 +1,7 @@
 const vscode = require('vscode');
-const { opendir, readFile } = require('node:fs/promises');
+const { opendir, readFile} = require('node:fs/promises');
 const path = require('path');
 const hasKey = require('lodash.has');
-
-const defaultResult = new vscode.Hover("");
 
 const esmaImportRegex =
   /^import(?:["'\s]*([\w*{}\n, ]+))from[ \n\t]*(?:['"])(?<packageName>([^'"\n]+))(['"])/g;
@@ -81,7 +79,7 @@ function activate(context) {
       async provideHover(document, position) {
         const editor = vscode.window.activeTextEditor;
         if (!editor) {
-          return defaultResult;
+          return new vscode.Hover('');
         }
 
         const lineTextOnHover = editor.document.getText(new vscode.Range(position.line, 0, position.line + 1, 0)) || '';
@@ -111,9 +109,9 @@ function activate(context) {
 
               return new vscode.Hover(text);
             })
-            .catch(() => defaultResult);
+            .catch(() => new vscode.Hover(''));
         } else {
-          return defaultResult;
+          return new vscode.Hover('');
         }
       },
     }

@@ -2,7 +2,7 @@
   "name": "package-viewer",
   "displayName": "NPM info",
   "description": "This extension provides valuable information about imported packages directly in your code editor.",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "publisher": "IoannP",
   "author": {
     "name": "Ioann Pilipchuk",
