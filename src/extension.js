@@ -1,9 +1,14 @@
-const vscode = require('vscode');
-const { readFile } = require('node:fs/promises');
-const hasKey = require('lodash.has');
+const vscode = require("vscode");
+const { readFile } = require("node:fs/promises");
+const hasKey = require("lodash.has");
 
-const esmaImportRegex = /^import(?:["'\s]*([\w*{}\n, ]+))from[ \n\t]*(?:['"])(?<packageName>([^'"\n]+))(['"])/g;
-const cjsImportRegex = /^(?:const|var|let)(?:[\w*{}\n, ]+)=\s*require\(\s*['"](?<packageName>[^'"\n\r]+)(?=['"]\s*\))/g; 
+const esmaImportRegex =
+  /^import(?:["'\s]*([\w*{}\n, ]+))from[ \n\t]*(?:['"])(?<packageName>([^'"\n]+))(['"])/g;
+const cjsImportRegex =
+  /^(?:const|var|let)(?:[\w*{}\n, ]+)=\s*require\(\s*['"](?<packageName>[^'"\n\r]+)(?=['"]\s*\))/g;
+
+  // GitHub: git+ssh://git@github.com/mongodb/node-mongodb-native.git
+  // git://github.com/brianc/node-postgres.git
 
 /**
  * Retrieves the package name from the given text using ES module or CommonJS import regex patterns.
@@ -14,13 +19,12 @@ const cjsImportRegex = /^(?:const|var|let)(?:[\w*{}\n, ]+)=\s*require\(\s*['"](?
 const getPackageName = (text) => {
   const esmaRegex = new RegExp(esmaImportRegex);
   const cjsRegex = new RegExp(cjsImportRegex);
-  
+
   const { packageName: esmaMatchResult } = esmaRegex.exec(text)?.groups || {};
   const { packageName: cjsMatchResult } = cjsRegex.exec(text)?.groups || {};
 
   return esmaMatchResult || cjsMatchResult;
-}
-
+};
 
 /**
  * Check if a package is installed in the project dependencies.
@@ -32,11 +36,17 @@ const getPackageName = (text) => {
 const isPackageInstalled = async (document, packageName) => {
   const { uri } = vscode.workspace.getWorkspaceFolder(document.uri);
   const projectRootFolder = uri.fsPath;
+  console.log(projectRootFolder);
   const packageJsonPath = `${projectRootFolder}/package.json`;
-  const packageJson = await readFile(packageJsonPath, 'utf8');
-  const { dependencies, devDependencies, peerDependencies } = JSON.parse(packageJson);
-  return hasKey(dependencies, packageName) || hasKey(devDependencies, packageName) || hasKey(peerDependencies, packageName);
-}
+  const packageJson = await readFile(packageJsonPath, "utf8");
+  const { dependencies, devDependencies, peerDependencies } =
+    JSON.parse(packageJson);
+  return (
+    hasKey(dependencies, packageName) ||
+    hasKey(devDependencies, packageName) ||
+    hasKey(peerDependencies, packageName)
+  );
+};
 
 /**
  * Function to activate a hover provider for JavaScript, fetching information about imported modules from npm.
@@ -45,38 +55,50 @@ const isPackageInstalled = async (document, packageName) => {
  */
 function activate(context) {
   const onHoverAction = vscode.languages.registerHoverProvider(
-    { language: 'javascript', scheme: 'file' },
+    [
+      { language: "javascript", scheme: "file" },
+      { language: "typescript", scheme: "file" },
+    ],
     {
       async provideHover(document, position) {
         const editor = vscode.window.activeTextEditor;
         if (!editor) {
-          return new vscode.Hover('');
+          return new vscode.Hover("");
         }
 
-        const lineTextOnHover  = editor
-          .document
-          .getText(new vscode.Range(position.line, 0, position.line + 1, 0)) || '';
+        const lineTextOnHover =
+          editor.document.getText(
+            new vscode.Range(position.line, 0, position.line + 1, 0)
+          ) || "";
         const packageName = getPackageName(lineTextOnHover.trim());
 
         const hasPackage = await isPackageInstalled(document, packageName);
         if (hasPackage) {
-
-          return fetch('https://registry.npmjs.org/' + packageName)
+          return fetch(`https://registry.npmjs.org/${packageName}/latest`)
             .then((response) => response.json())
             .then((data) => {
               const text = new vscode.MarkdownString();
               text.supportHtml = true;
 
+              const homePageLink = data.homepage;
+              const npmLink = `https://www.npmjs.com/package/${packageName}`;
+              const githubLink = data.repository.url.replace(/.*(?=\/\/)/, 'https:');
+
               text.appendMarkdown(`**Description**: ${data.description}<br />`);
-              text.appendMarkdown(`**Homepage**: [${data.homepage}](${data.homepage})`);
- 
+              text.appendMarkdown(`**GitHub**: [${githubLink}](${githubLink})<br />`);
+              text.appendMarkdown(`**NPM**: [${npmLink}](${npmLink})<br />`);
+              
+              if (!homePageLink.startsWith('https://github.com')) {
+                text.appendMarkdown(`**Homepage**: [${homePageLink}](${homePageLink})<br />`);
+              }
+
               return new vscode.Hover(text);
-            }).catch(() => new vscode.Hover(''));
-          
+            })
+            .catch(() => new vscode.Hover(""));
         } else {
-          return new vscode.Hover('');
+          return new vscode.Hover("");
         }
-      }
+      },
     }
   );
 

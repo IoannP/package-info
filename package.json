@@ -12,6 +12,7 @@
     "url": "https://github.com/IoannP/npm-info.git",
     "type": "git"
   },
+  "license": "MIT",
   "engines": {
     "vscode": "^1.86.0"
   },
@@ -27,7 +28,7 @@
     "link",
     "homepage"
   ],
-  "icon": "assets/images/logo.png",
+  "icon": "assets/logo.png",
   "galleryBanner": {
     "color": "#bbbbbf",
     "theme": "dark"
