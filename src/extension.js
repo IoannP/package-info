@@ -1,14 +1,14 @@
-const vscode = require("vscode");
-const { readFile } = require("node:fs/promises");
-const hasKey = require("lodash.has");
+const vscode = require('vscode');
+const { opendir, readFile } = require('node:fs/promises');
+const path = require('path');
+const hasKey = require('lodash.has');
+
+const defaultResult = new vscode.Hover("");
 
 const esmaImportRegex =
   /^import(?:["'\s]*([\w*{}\n, ]+))from[ \n\t]*(?:['"])(?<packageName>([^'"\n]+))(['"])/g;
 const cjsImportRegex =
   /^(?:const|var|let)(?:[\w*{}\n, ]+)=\s*require\(\s*['"](?<packageName>[^'"\n\r]+)(?=['"]\s*\))/g;
-
-  // GitHub: git+ssh://git@github.com/mongodb/node-mongodb-native.git
-  // git://github.com/brianc/node-postgres.git
 
 /**
  * Retrieves the package name from the given text using ES module or CommonJS import regex patterns.
@@ -29,18 +29,35 @@ const getPackageName = (text) => {
 /**
  * Check if a package is installed in the project dependencies.
  *
- * @param { vscode.TextDocument } document - The document object
+ * @param { string } currentDirectoryPath - The path of the current directory
  * @param { string } packageName - The name of the package to check
  * @return { Promise<boolean> } Whether the package is installed or not
  */
-const isPackageInstalled = async (document, packageName) => {
-  const { uri } = vscode.workspace.getWorkspaceFolder(document.uri);
-  const projectRootFolder = uri.fsPath;
-  console.log(projectRootFolder);
-  const packageJsonPath = `${projectRootFolder}/package.json`;
+const isPackageInstalled = async (currentDirectoryPath, packageName) => {
+  const directory = await opendir(currentDirectoryPath);
+  const workspaceDirectory = vscode.workspace.workspaceFolders[0].uri.fsPath;
+
+  let isPackageJsonPresent = false;
+  for await (const item of directory) {
+    if (item.name === 'package.json') {
+      isPackageJsonPresent = true;
+      break;
+    }
+  }
+
+  if (!isPackageJsonPresent && currentDirectoryPath === workspaceDirectory) {
+    return false;
+  }
+
+  if (!isPackageJsonPresent) {
+    const parentDirectoryPath = path.dirname(currentDirectoryPath);
+    return isPackageInstalled(parentDirectoryPath, packageName);
+  }
+
+  const packageJsonPath = `${currentDirectoryPath}/package.json`;
   const packageJson = await readFile(packageJsonPath, "utf8");
-  const { dependencies, devDependencies, peerDependencies } =
-    JSON.parse(packageJson);
+
+  const { dependencies, devDependencies, peerDependencies } = JSON.parse(packageJson);
   return (
     hasKey(dependencies, packageName) ||
     hasKey(devDependencies, packageName) ||
@@ -48,7 +65,7 @@ const isPackageInstalled = async (document, packageName) => {
   );
 };
 
-/**
+/**l
  * Function to activate a hover provider for JavaScript, fetching information about imported modules from npm.
  *
  * @param { vscode.ExtensionContext } context - The extension context
@@ -56,23 +73,23 @@ const isPackageInstalled = async (document, packageName) => {
 function activate(context) {
   const onHoverAction = vscode.languages.registerHoverProvider(
     [
-      { language: "javascript", scheme: "file" },
-      { language: "typescript", scheme: "file" },
+      { language: 'javascript', scheme: 'file' },
+      { language: 'typescript', scheme: 'file' },
+      { language: 'vue', scheme: 'file' },
     ],
     {
       async provideHover(document, position) {
         const editor = vscode.window.activeTextEditor;
         if (!editor) {
-          return new vscode.Hover("");
+          return defaultResult;
         }
 
-        const lineTextOnHover =
-          editor.document.getText(
-            new vscode.Range(position.line, 0, position.line + 1, 0)
-          ) || "";
+        const lineTextOnHover = editor.document.getText(new vscode.Range(position.line, 0, position.line + 1, 0)) || '';
         const packageName = getPackageName(lineTextOnHover.trim());
 
-        const hasPackage = await isPackageInstalled(document, packageName);
+        const currentDirectoryPath = path.dirname(document.fileName);
+        const hasPackage = await isPackageInstalled(currentDirectoryPath, packageName);
+
         if (hasPackage) {
           return fetch(`https://registry.npmjs.org/${packageName}/latest`)
             .then((response) => response.json())
@@ -87,16 +104,16 @@ function activate(context) {
               text.appendMarkdown(`**Description**: ${data.description}<br />`);
               text.appendMarkdown(`**GitHub**: [${githubLink}](${githubLink})<br />`);
               text.appendMarkdown(`**NPM**: [${npmLink}](${npmLink})<br />`);
-              
-              if (!homePageLink.startsWith('https://github.com')) {
+
+              if (!homePageLink.startsWith("https://github.com")) {
                 text.appendMarkdown(`**Homepage**: [${homePageLink}](${homePageLink})<br />`);
               }
 
               return new vscode.Hover(text);
             })
-            .catch(() => new vscode.Hover(""));
+            .catch(() => defaultResult);
         } else {
-          return new vscode.Hover("");
+          return defaultResult;
         }
       },
     }
