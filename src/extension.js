@@ -1,12 +1,10 @@
 const vscode = require('vscode');
-const { opendir, readFile} = require('node:fs/promises');
+const { opendir, readFile } = require('node:fs/promises');
 const path = require('path');
 const hasKey = require('lodash.has');
 
-const esmaImportRegex =
-  /^import(?:["'\s]*([\w*{}\n, ]+))from[ \n\t]*(?:['"])(?<packageName>([^'"\n]+))(['"])/g;
-const cjsImportRegex =
-  /^(?:const|var|let)(?:[\w*{}\n, ]+)=\s*require\(\s*['"](?<packageName>[^'"\n\r]+)(?=['"]\s*\))/g;
+const esmaImportRegex = /^import(?:["'\s]*([\w*{}\n, ]+))from[ \n\t]*(?:['"])(?<packageName>([^'"\n]+))(['"])/g;
+const cjsImportRegex = /(^(?:const|var|let)(?:[\w*{}\n, ]+)=\s*require|^require)\(\s*['"](?<packageName>[^'"\n\r]+)(?=['"]\s*\))/g;
 
 /**
  * Retrieves the package name from the given text using ES module or CommonJS import regex patterns.
