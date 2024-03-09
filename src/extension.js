@@ -4,6 +4,7 @@ const path = require('path');
 const hasKey = require('lodash.has');
 
 const esmaImportRegex = /^import(?:["'\s]*([\w*{}\n, ]+))from[ \n\t]*(?:['"])(?<packageName>([^'"\n]+))(['"])/g;
+const esmaDynamicImportRegex = /(^(?:const|var|let)(?:[\w*{}\n, ]+)=\s*import|^import|^await(\s+|\n)import|await(\s+|\n)import)\(\s*['"](?<packageName>[^'"\n\r]+)(?=['"]\s*\))/g;
 const cjsImportRegex = /(^(?:const|var|let)(?:[\w*{}\n, ]+)=\s*require|^require)\(\s*['"](?<packageName>[^'"\n\r]+)(?=['"]\s*\))/g;
 
 /**
@@ -14,12 +15,14 @@ const cjsImportRegex = /(^(?:const|var|let)(?:[\w*{}\n, ]+)=\s*require|^require)
  */
 const getPackageName = (text) => {
   const esmaRegex = new RegExp(esmaImportRegex);
+  const esmaDynamicRegex = new RegExp(esmaDynamicImportRegex);
   const cjsRegex = new RegExp(cjsImportRegex);
 
   const { packageName: esmaMatchResult } = esmaRegex.exec(text)?.groups || {};
+  const { packageName: esmaDynamicMatchResult } = esmaDynamicRegex.exec(text)?.groups || {};
   const { packageName: cjsMatchResult } = cjsRegex.exec(text)?.groups || {};
 
-  return esmaMatchResult || cjsMatchResult;
+  return esmaMatchResult || esmaDynamicMatchResult || cjsMatchResult;
 };
 
 /**
