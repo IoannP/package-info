@@ -2,7 +2,7 @@
   "name": "package-viewer",
   "displayName": "NPM info",
   "description": "This extension provides information about imported packages directly in your code editor.",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "publisher": "IoannP",
   "author": {
     "name": "Ioann Pilipchuk",
@@ -34,17 +34,23 @@
     "theme": "dark"
   },
   "activationEvents": [
-    "onLanguage:javascript"
+    "onLanguage:javascript",
+    "onLanguage:typescript"
   ],
-  "main": "./src/extension",
+  "main": "extension.js",
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "vscode-test"
   },
   "devDependencies": {
     "@types/vscode": "^1.86.0",
-    "eslint": "^8.56.0"
+    "@vscode/test-cli": "^0.0.8",
+    "@vscode/test-electron": "^2.3.9",
+    "eslint": "^8.56.0",
+    "nock": "^13.5.4"
   },
   "dependencies": {
+    "axios": "^1.6.8",
     "lodash.has": "^4.5.2"
   }
 }

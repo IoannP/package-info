@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "package": "1.0.0",
+    "@package/package": "1.0.0"
+  },
+  "devDependencies": {
+    "test": "1.0.0"
+  },
+  "peerDependencies": {
+    "peer": "1.0.0"
+  }
+}

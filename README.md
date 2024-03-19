@@ -1,3 +1,5 @@
+[![FOSSA Status](https://app.fossa.com/api/projects/custom%2B43703%2Fgit%40github.com%3AIoannP%2Fnpm-info.git.svg?type=shield&issueType=license)](https://app.fossa.com/projects/custom%2B43703%2Fgit%40github.com%3AIoannP%2Fnpm-info.git?ref=badge_shield&issueType=license)
+
 # View NPM import information
 
 Access package descriptions right from your code editor with NPM info. This lightweight extension simplify your coding workflow by allowing you to effortlessly explore package details directly within your code.
