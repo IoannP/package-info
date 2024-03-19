@@ -12,9 +12,9 @@ jobs:
         with:
           node-version: '21.x'
       - name: 'Install dependencies'
-        uses: npm install
+        run: npm install
       - name: 'Run tests'
-        uses: npm run test
+        run: npm run test
       # - name: 'Test coverage'
       #   uses: 'codecov/codecov-action@v4.0.1'
       #   with:
