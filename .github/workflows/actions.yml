@@ -1,0 +1,17 @@
+name: 'actions'
+
+on: ['push', 'pull_request']
+
+jobs:
+  run:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: 'Install dependencies'
+        uses: 'npm install'
+      - name: 'Run tests'
+        uses: 'npm run test'
+      # - name: 'Test coverage'
+      #   uses: 'codecov/codecov-action@v4.0.1'
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     slug: 'IoannP/npm-info'
