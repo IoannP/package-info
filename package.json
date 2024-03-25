@@ -2,14 +2,14 @@
   "name": "package-info",
   "displayName": "Package info",
   "description": "This extension provides information about imported packages directly in your code editor.",
-  "version": "1.0.7",
+  "version": "1.2.7",
   "publisher": "IoannP",
   "author": {
     "name": "Ioann Pilipchuk",
     "email": "iopilipchuk@gmail.com"
   },
   "repository": {
-    "url": "https://github.com/IoannP/npm-info.git",
+    "url": "https://github.com/IoannP/package-info.git",
     "type": "git"
   },
   "license": "MIT",
