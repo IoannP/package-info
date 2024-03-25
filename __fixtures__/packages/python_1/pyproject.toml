@@ -1,0 +1,6 @@
+[project]
+name = "project"
+
+dependencies = [
+    "module>=22.2.0",
+]

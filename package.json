@@ -1,8 +1,8 @@
 {
-  "name": "package-viewer",
-  "displayName": "NPM info",
+  "name": "package-info",
+  "displayName": "Package info",
   "description": "This extension provides information about imported packages directly in your code editor.",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "publisher": "IoannP",
   "author": {
     "name": "Ioann Pilipchuk",
@@ -35,7 +35,10 @@
   },
   "activationEvents": [
     "onLanguage:javascript",
-    "onLanguage:typescript"
+    "onLanguage:typescript",
+    "onLanguage:python",
+    "onLanguage:svelte",
+    "onLanguage:vue"
   ],
   "main": "extension.js",
   "scripts": {
@@ -51,6 +54,8 @@
   },
   "dependencies": {
     "axios": "^1.6.8",
-    "lodash.has": "^4.5.2"
+    "lodash.has": "^4.5.2",
+    "toml": "^3.0.0",
+    "yaml": "^2.4.1"
   }
 }

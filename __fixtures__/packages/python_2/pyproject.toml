@@ -1,0 +1,5 @@
+[project]
+name = "project"
+
+[tool.poetry.dependencies]
+module = "^22.2.0",

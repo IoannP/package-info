@@ -14,17 +14,17 @@ const getPackageInfo = require('../src/index');
 let source;
 
 before(async () => {
-  source = nock('https://registry.npmjs.org').persist();
+  source = nock('https://pypi.org/pypi').persist();
 });
 
-describe('Test javascript', () => {
-  const { data, expected: expectedData } = fixtures.javascript;
+describe('Test python 1', () => {
+  const { data, expected: expectedData } = fixtures.python;
 
   test('Get package info', async () => {
     for (const { input, packageName } of data.matches) {
       source.get(`/${packageName}/latest`).reply(200, data.packages[packageName]);
       const expected = expectedData[packageName];
-      const result = await getPackageInfo(input, 'javascript');
+      const result = await getPackageInfo(input, 'python');
       assert.strictEqual(result.value, expected);
     }
   });

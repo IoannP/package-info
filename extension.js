@@ -38,6 +38,7 @@ function activate(context) {
       { language: 'typescript', scheme: 'file' },
       { language: 'vue', scheme: 'file' },
       { language: 'svelte', scheme: 'file' },
+      { language: 'python', scheme: 'file' },
     ],
     {
       provideHover,
