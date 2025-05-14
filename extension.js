@@ -35,7 +35,9 @@ function activate(context) {
   const subscription = vscode.languages.registerHoverProvider(
     [
       { language: 'javascript', scheme: 'file' },
+      { language: 'javascriptreact', scheme: 'file' },
       { language: 'typescript', scheme: 'file' },
+      { language: 'typescriptreact', scheme: 'file' },
       { language: 'vue', scheme: 'file' },
       { language: 'svelte', scheme: 'file' },
       { language: 'python', scheme: 'file' },
