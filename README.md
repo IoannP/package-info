@@ -1,17 +1,35 @@
-# View NPM import information
+# Package Info
 
-Access package descriptions right from your code editor with package info. This lightweight extension simplify your coding workflow by allowing you to effortlessly explore package details directly within your code.
+Packageobligatory Info
 
-Simply hover over imported packages in your code to instantly view concise descriptions. Acquire simple descriptions of each package and links to them.
+Access package information directly in your code editor with Package Info. This lightweight VS Code extension provides instant package details when you hover over imports, streamlining your development workflow.
 
-Package info streamlines your development process by providing essential information at your fingertips, saving you time and effort. Plus, with convenient links to the package's source page on npm or GitHub, you can dive deeper into documentation.
+## Features
+- **Hover Information**: View concise package descriptions on hover.
+- **Quick Links**: Access npm or GitHub pages for further documentation.
+- **Supported Languages/Frameworks**:
+  - JavaScript
+  - JavaScript React
+  - TypeScript
+  - TypeScript React
+  - Python
+  - Svelte (framework)
+  - Vue (framework)
+  - JSON
 
-Supported languages:
-- Javascript
-- Python
+## How to Use
+1. Open a file in a supported language or framework.
+2. Hover over `require(...)` or `import from '...'` statements to view package details.
 
-# How to use 
+![Example](assets/example.png)
 
-1. Navigate to the line where you `require(...)` or `improt from '...'` the package.
+## Installation
+1. Install from the VS Code Marketplace.
+2. Ensure VS Code version 1.94.0 or higher.
+3. The extension activates automatically for supported languages/frameworks.
 
-![example](assets/example.png)
+## Contributing
+Report bugs or suggest features at [GitHub](https://github.com/IoannP/package-info).
+
+## License
+MIT
