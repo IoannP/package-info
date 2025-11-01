@@ -36,6 +36,7 @@ const findPackageName = (
   let packageName = packageNameVariants.find((variant) =>
     has(dependencies, variant)
   );
+
   if (!packageName) {
     packageName = packageNameVariants.find((variant) =>
       has(devDependencies, variant)

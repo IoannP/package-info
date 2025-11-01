@@ -4,6 +4,7 @@ import { MarkdownString, window } from "vscode";
 
 import getLanguage from "./languages/index.mjs";
 import logger from "./Logger.mjs";
+import Cache from "./Cache.mjs";
 import {
   findFileByName,
   getFileData,
@@ -19,13 +20,12 @@ export default async (
   if (!language) {
     return null;
   }
-  logger.info(`language: ${languageName}, text: ${text}`);
-  const importName = extractImportName(text, language.regexes);
-  logger.debug(`Import name: ${importName}`);
 
+  const importName = extractImportName(text, language.regexes);
   if (isUndefined(importName)) {
     return null;
   }
+  logger.info(`language: ${languageName}, matched import name: ${importName}`);
 
   const currntFilePath = window.activeTextEditor?.document.fileName;
   if (isUndefined(currntFilePath)) {
@@ -33,7 +33,6 @@ export default async (
   }
 
   const currentDirectoryPath = path.dirname(currntFilePath);
-  // logger.debug("Current dir path: ", currentDirectoryPath);
   if (isUndefined(currentDirectoryPath)) {
     return null;
   }
@@ -43,7 +42,7 @@ export default async (
     language.packageManagerFileName
   );
 
-  logger.debug(`Package manager file path: ${packageManagerFilePath}`);
+  logger.info(`Package manager file path: ${packageManagerFilePath}`);
   if (isUndefined(packageManagerFilePath)) {
     return null;
   }
@@ -53,16 +52,22 @@ export default async (
     packageManagerFileData,
     importName
   );
-  logger.debug(`Package name: ", ${packageName}`);
+
   if (isUndefined(packageName)) {
     return null;
   }
+  logger.info(`Package name: ${packageName}`);
 
-  const packageInfoUrl = language.buildPackageInfoUrl(packageName);
-  const packageInfo = await axios.get(packageInfoUrl).then(({ data }) => data);
-
-  const content = new MarkdownString();
-  content.supportHtml = true;
+  let packageData = Cache.get(packageName);
+  if (isUndefined(packageData)) {
+    const packageInfoUrl = language.buildPackageInfoUrl(packageName);
+    const packageInfo = await axios
+      .get(packageInfoUrl)
+      .then(({ data }) => data);
+    packageData = language.extractPackageInfo(packageInfo);
+    logger.info(`Cache miss → fetched package: ${packageName}`);
+    Cache.set(packageName, packageData);
+  }
 
   const {
     homePageLink,
@@ -70,7 +75,10 @@ export default async (
     githubLink,
     description,
     packageManagerName,
-  } = language.extractPackageInfo(packageInfo);
+  } = packageData;
+
+  const content = new MarkdownString();
+  content.supportHtml = true;
 
   content.appendMarkdown(`**Description**: ${description}<br />`);
   content.appendMarkdown(

@@ -5,6 +5,16 @@ import toml from "toml";
 import { opendir, readFile } from "node:fs/promises";
 import { workspace } from "vscode";
 
+const isUndefined = (value: unknown): value is undefined => value === undefined;
+
+const isNull = (value: unknown): value is null => value === null;
+
+const isNil = (value: unknown): value is null | undefined =>
+  isUndefined(value) || isNull(value);
+
+const getWorkspaceDirpath = (): string | undefined =>
+  (workspace.workspaceFolders ?? [])[0]?.uri.fsPath;
+
 const generatePackageNameVariants = (
   packageName: string,
   delimiter: string = "/"
@@ -21,7 +31,7 @@ const generatePackageNameVariants = (
 };
 
 const has = <T extends object>(input: T, path: string | string[]): boolean => {
-  if (input === null || input === undefined) {
+  if (isNil(input)) {
     return false;
   }
 
@@ -29,13 +39,13 @@ const has = <T extends object>(input: T, path: string | string[]): boolean => {
 
   let current: unknown = input;
   for (const key of pathArray) {
-    if (current === null || current === undefined) {
+    if (isNil(current)) {
       return false;
     }
     current = (current as Record<string, unknown>)[key];
   }
 
-  return true;
+  return !isNil(current);
 };
 
 const extractImportName = (
@@ -56,10 +66,6 @@ const findFileByName = async (
 ): Promise<string | undefined> => {
   const directory = await opendir(currentDirPath);
 
-  const workspaceDirectoryPath = workspace.workspaceFolders
-    ? workspace.workspaceFolders[0].uri.fsPath
-    : null;
-
   let isFileExists = false;
   for await (const item of directory) {
     if (item.name === fileName) {
@@ -69,7 +75,7 @@ const findFileByName = async (
   }
 
   // Prevent deep recursion if current directory is the workspace root
-  if (!isFileExists && currentDirPath === workspaceDirectoryPath) {
+  if (!isFileExists && currentDirPath === getWorkspaceDirpath()) {
     return;
   }
 
@@ -104,8 +110,6 @@ const getFileData = async (filePath: string): Promise<any> => {
   return parseFileData(fileData, fileExtension);
 };
 
-const isUndefined = (value: unknown): value is undefined => value === undefined;
-
 export {
   findFileByName,
   parseFileData,
@@ -113,5 +117,8 @@ export {
   extractImportName,
   has,
   isUndefined,
+  isNil,
+  isNull,
   generatePackageNameVariants,
+  getWorkspaceDirpath,
 };

@@ -1,4 +1,4 @@
-import vscode from "vscode";
+import * as vscode from "vscode";
 
 type LogMods = keyof Pick<
   vscode.LogOutputChannel,
@@ -7,7 +7,7 @@ type LogMods = keyof Pick<
 
 export default class Logger {
   private static channel: vscode.LogOutputChannel =
-    vscode.window.createOutputChannel("package-info", { log: true });
+    vscode.window.createOutputChannel("Package Info", { log: true });
 
   private static enabled: boolean = true;
 
@@ -40,14 +40,14 @@ export default class Logger {
   }
 
   public static warn(message: string): void {
-    this.log(vscode.LogLevel.Info, "warn", message);
+    this.log(vscode.LogLevel.Warning, "warn", message);
   }
 
   public static error(message: string): void {
-    this.log(vscode.LogLevel.Info, "error", message);
+    this.log(vscode.LogLevel.Error, "error", message);
   }
 
   public static debug(message: string): void {
-    this.log(vscode.LogLevel.Info, "debug", message);
+    this.log(vscode.LogLevel.Debug, "debug", message);
   }
 }

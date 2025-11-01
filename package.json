@@ -14,8 +14,8 @@
   },
   "license": "MIT",
   "engines": {
-    "vscode": ">=1.86.0",
-    "node": ">= 16"
+    "vscode": ">=1.103.0",
+    "node": ">=16"
   },
   "categories": [
     "Other"
@@ -23,6 +23,7 @@
   "keywords": [
     "info",
     "package",
+    "npm",
     "view",
     "link",
     "homepage"
