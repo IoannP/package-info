@@ -2,7 +2,7 @@
   "name": "package-info",
   "displayName": "Package info",
   "description": "This extension provides information about imported packages directly in your code editor.",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "publisher": "IoannP",
   "author": {
     "name": "Ioann Pilipchuk",
